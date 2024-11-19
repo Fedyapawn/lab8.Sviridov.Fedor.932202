@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Task</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            
+        }
+
+        table {
+            width: 40%;
+            border-collapse: collapse;
+            
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            text-align: left;
+            height: 15px; /* Высота строки */
+        }
+
+        input[type="text"] {
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: none;
+            
+        }
+
+        button {
+            margin: 0 2px;
+            padding: 5px 8px; /* Увеличенные кнопки */
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .controls button {
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        #output {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <table id="dataTable">
+        
+        <tbody>
+            <tr>
+                <td><input type="text" value="Первый"></td>
+                <td><input type="text" value="123"></td>
+                <td>
+                    <button class="up">↑</button>
+                    <button class="down">↓</button>
+                    <button class="delete">✖</button>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" value="Второй"></td>
+                <td><input type="text" value="456"></td>
+                <td>
+                    <button class="up">↑</button>
+                    <button class="down">↓</button>
+                    <button class="delete">✖</button>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" value="Третий"></td>
+                <td><input type="text" value="789"></td>
+                <td>
+                    <button class="up">↑</button>
+                    <button class="down">↓</button>
+                    <button class="delete">✖</button>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="text" value="Четвертый"></td>
+                <td><input type="text" value="012"></td>
+                <td>
+                    <button class="up">↑</button>
+                    <button class="down">↓</button>
+                    <button class="delete">✖</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="controls">
+        <button id="addRow">Добавить элемент</button>
+        <button id="saveData">Сохранить</button>
+    </div>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('addRow').addEventListener('click', () => {
+            const table = document.querySelector('#dataTable tbody');
+            const rowCount = table.rows.length + 1; // Определяем порядковый номер
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="text" value="Элемент ${rowCount}"></td>
+                <td><input type="text" value="000"></td>
+                <td>
+                    <button class="up">↑</button>
+                    <button class="down">↓</button>
+                    <button class="delete">✖</button>
+                </td>
+            `;
+            table.appendChild(newRow);
+        });
+
+        document.getElementById('dataTable').addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete')) {
+                const row = e.target.closest('tr');
+                row.remove();
+                updateRowNumbers(); // Обновляем номера строк после удаления
+            } else if (e.target.classList.contains('up')) {
+                const row = e.target.closest('tr');
+                if (row.previousElementSibling) {
+                    row.parentNode.insertBefore(row, row.previousElementSibling);
+                }
+            } else if (e.target.classList.contains('down')) {
+                const row = e.target.closest('tr');
+                if (row.nextElementSibling) {
+                    row.parentNode.insertBefore(row.nextElementSibling, row);
+                }
+            }
+        });
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#dataTable tbody tr');
+            rows.forEach((row, index) => {
+                const input = row.querySelector('td:nth-child(1) input');
+                input.value = `Элемент ${index + 1}`;
+            });
+        }
+
+        document.getElementById('saveData').addEventListener('click', () => {
+            const rows = document.querySelectorAll('#dataTable tbody tr');
+            const data = Array.from(rows).map(row => ({
+                [row.querySelector('td:nth-child(1) input').value]: row.querySelector('td:nth-child(2) input').value
+            }));
+            
+            // Вывод данных на экран
+            const output = document.getElementById('output');
+            output.textContent = JSON.stringify(data, null, 2); // Форматированный вывод
+        });
+    </script>
+</body>
+</html>
